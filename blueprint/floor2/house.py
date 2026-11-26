@@ -293,14 +293,14 @@ def ball(name, x, y, z, r, m, squash=(1, 1, 1), stage=None):
 # walls: axis ('x' runs east-west at y=c, 'y' runs north-south at x=c), c, from, to, thickness, openings
 # opening: (kind, from, to, sill, head[, hinge_end, swing_side])
 WALLS = [
-    ("x", 0.0, 0.0, 10.5, 0.2, [("win", 1.0, 2.6, 0.9, 2.15), ("win", 4.3, 5.9, 0.9, 2.15), ("win", 7.4, 9.8, 0.12, 2.2)]),   # south
+    ("x", 0.0, 0.0, 10.5, 0.2, [("win", 1.0, 2.6, 0.9, 2.15), ("win", 4.0, 5.6, 1.0, 2.1), ("win", 7.4, 9.8, 0.12, 2.2)]),   # south
     ("y", 10.5, 0.0, 8.9, 0.2, [("win", 3.75, 5.45, 0.95, 2.15), ("win", 7.3, 8.1, 1.2, 2.0)]),  # east
     ("y", 0.0, 0.0, 4.5, 0.2, []),                                             # west of master
     ("x", 4.5, 0.0, 3.1, 0.2, []),                                             # neighbour's bath above master
     ("y", 3.1, 4.5, 8.9, 0.2, []),                                             # neighbour's kitchen
     ("x", 8.9, 3.1, 10.5, 0.2, [("entry", 3.75, 4.7, 0, DOOR_H)]),             # stair hall
     ("y", 3.6, 0.0, 4.5, 0.12, [("door", 3.55, 4.35, 0, DOOR_H, 1, -1)]),      # master | room, nook
-    ("x", 3.4, 3.6, 6.6, 0.12, [("door", 3.78, 4.6, 0, DOOR_H, 0, -1)]),       # room north
+    ("x", 3.4, 3.6, 6.6, 0.12, [("door", 3.78, 4.6, 0, DOOR_H, 0, 1)]),        # room north (opens out, the racks stand inside)
     ("y", 6.6, 0.0, 3.4, 0.12, []),                                            # room | living
     ("x", 4.5, 3.1, 4.9, 0.12, []),                                            # bath south
     ("y", 4.9, 4.5, 8.9, 0.12, [("door", 4.7, 5.45, 0, DOOR_H, 0, -1), ("open", 7.15, 8.8, 0, H)]),  # bath, entrance | hall
@@ -536,25 +536,41 @@ def master_bed():
         box(f"bed_switch{i}", x - 0.07, x + 0.07, 0.165, 0.175, 0.62, 0.7, "black")
 
 
-def rack(x0, x1, y0, y1, bays, tag, drawers=False):
-    """chrome system hanger along y: four posts a bay, white shelves top and bottom, a rail under the top shelf"""
+def rack(x0, x1, y0, y1, bays, tag, kind="hang"):
+    """chrome system hanger along y. hang: top bars and rail, one shelf at waist height with a second rail, a bottom
+    shelf. shelf: five white shelves."""
     L = (y1 - y0) / bays
     for b in range(bays + 1):
         y = y0 + L * b
         for x in (x0 + 0.02, x1 - 0.02):
-            cyl(f"rack_post_{tag}", x, y, 0.011, 0.0, 2.1, "chrome", verts=8)
+            cyl(f"rack_post_{tag}", x, y, 0.011, 0.0, 2.08, "chrome", verts=8)
+        rod(f"rack_bar_{tag}", (x0 + 0.02, y, 2.05), (x1 - 0.02, y, 2.05), 0.008, "chrome", verts=8)
+    wall_x = x0 + 0.02 if x0 < 5 else x1 - 0.02
     for b in range(bays):
         a0, a1 = y0 + L * b + 0.012, y0 + L * (b + 1) - 0.012
-        box(f"rack_shelf_{tag}", x0, x1, a0, a1, 2.0, 2.02, "white")
-        box(f"rack_shelf_{tag}", x0, x1, a0, a1, 0.16, 0.18, "white")
-        rod(f"rack_rail_{tag}", ((x0 + x1) / 2, a0, 1.9), ((x0 + x1) / 2, a1, 1.9), 0.009, "chrome", verts=8)
-        if b % 2 == 0:
-            box(f"rack_shelf_{tag}", x0, x1, a0, a1, 0.95, 0.97, "white")
-            rod(f"rack_rail_{tag}", ((x0 + x1) / 2, a0, 0.88), ((x0 + x1) / 2, a1, 0.88), 0.009, "chrome", verts=8)
+        for x in (x0 + 0.02, x1 - 0.02):
+            rod(f"rack_bar_{tag}", (x, a0, 2.05), (x, a1, 2.05), 0.008, "chrome", verts=8)
+        if kind == "hang":
+            rod(f"rack_rail_{tag}", ((x0 + x1) / 2, a0, 1.93), ((x0 + x1) / 2, a1, 1.93), 0.01, "chrome", verts=8)
+            box(f"rack_shelf_{tag}", x0, x1, a0, a1, 0.98, 1.0, "white")
+            rod(f"rack_rail_{tag}", ((x0 + x1) / 2, a0, 0.9), ((x0 + x1) / 2, a1, 0.9), 0.01, "chrome", verts=8)
+            box(f"rack_shelf_{tag}", x0, x1, a0, a1, 0.18, 0.2, "white")
         else:
-            for z in (0.6, 1.05, 1.5):
+            for z in (0.18, 0.64, 1.1, 1.56, 2.02):
                 box(f"rack_shelf_{tag}", x0, x1, a0, a1, z, z + 0.02, "white")
-        rod(f"rack_brace_{tag}", (x1 - 0.02 if x0 > 5 else x0 + 0.02, a0, 0.3), (x1 - 0.02 if x0 > 5 else x0 + 0.02, a1, 0.8), 0.004, "chrome", verts=6)
+        rod(f"rack_brace_{tag}", (wall_x, a0, 1.05), (wall_x, a1, 1.75), 0.004, "chrome", verts=6)
+        rod(f"rack_brace_{tag}", (wall_x, a1, 1.05), (wall_x, a0, 1.75), 0.004, "chrome", verts=6)
+
+
+def corner_shelf(cx, cy, r, z, m="white", sx=1):
+    """a quarter-round shelf in the south-east corner (the curved unit in the photo)"""
+    bm = bmesh.new()
+    pts = [(cx, cy)] + [(cx + sx * r * math.cos(a), cy + r * math.sin(a)) for a in [math.radians(90 * i / 12) for i in range(13)]]
+    f = bm.faces.new([bm.verts.new((x, y, z)) for x, y in pts])
+    e = bmesh.ops.extrude_face_region(bm, geom=[f])
+    bmesh.ops.translate(bm, verts=[v for v in e["geom"] if isinstance(v, bmesh.types.BMVert)], vec=(0, 0, 0.02))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return _finish("rack_corner_shelf", bm, m)
 
 
 def furnish():
@@ -646,15 +662,32 @@ def furnish():
     master_bed()
     # ---- dressing room (the chrome system hangers in the photo)
     S[0] = "builtin"
-    rack(3.7, 4.2, 0.25, 2.35, 2, "w")
-    rack(6.0, 6.5, 0.25, 3.15, 3, "e")
-    for x in (4.45, 5.25):
-        cyl("rack_post_s", x, 0.2, 0.011, 0, 2.1, "chrome", verts=8); cyl("rack_post_s", x, 0.62, 0.011, 0, 2.1, "chrome", verts=8)
-    box("rack_shelf_s", 4.45, 5.25, 0.2, 0.62, 2.0, 2.02, "white"); box("rack_shelf_s", 4.45, 5.25, 0.2, 0.62, 0.95, 0.97, "white")
-    for k in range(2):
-        box("rack_drawer_s", 4.47, 5.23, 0.2, 0.62, 0.2 + 0.26 * k, 0.45 + 0.26 * k, "white", 0.004)
+    # seen from the door looking south, as in the photo: hanging bays on the left (east) wall with the wall
+    # air conditioner beyond them, five-shelf towers on the right (west) wall, a rail-and-drawer unit under the
+    # window and the quarter-round unit in the far right corner
+    rack(6.0, 6.5, 1.2, 3.15, 2, "e", "hang")
+    box("wall_aircon", 6.32, 6.535, 0.3, 1.1, 1.9, 2.17, "cream", 0.03, 3)
+    rack(3.7, 4.08, 1.0, 2.95, 2, "w", "shelf")
+    for x in (4.5, 5.28):
+        cyl("rack_post_s", x, 0.2, 0.011, 0, 2.08, "chrome", verts=8); cyl("rack_post_s", x, 0.62, 0.011, 0, 2.08, "chrome", verts=8)
+        rod("rack_bar_s", (x, 0.2, 2.05), (x, 0.62, 2.05), 0.008, "chrome", verts=8)
+    for y in (0.2, 0.62):
+        rod("rack_bar_s", (4.5, y, 2.05), (5.28, y, 2.05), 0.008, "chrome", verts=8)
+    rod("rack_rail_s", (4.5, 0.41, 1.93), (5.28, 0.41, 1.93), 0.01, "chrome", verts=8)
+    box("rack_shelf_s", 4.51, 5.27, 0.2, 0.62, 0.98, 1.0, "white")
+    box("rack_drawer_box", 4.51, 5.27, 0.2, 0.62, 0.2, 0.72, "white", 0.004)
+    box("rack_drawer_line", 4.52, 5.26, 0.619, 0.623, 0.455, 0.465, "trim")
+    rod("rack_brace_s", (4.5, 0.2, 1.05), (5.28, 0.2, 1.6), 0.004, "chrome", verts=6); rod("rack_brace_s", (5.28, 0.2, 1.05), (4.5, 0.2, 1.6), 0.004, "chrome", verts=6)
+    for z in (0.18, 0.98, 2.02):
+        corner_shelf(3.68, 0.2, 0.8, z, sx=1)
+    for i in range(7):
+        a0, a1 = math.radians(90 * i / 7), math.radians(90 * (i + 1) / 7)
+        rod("rack_corner_rail", (3.68 + 0.55 * math.cos(a0), 0.2 + 0.55 * math.sin(a0), 1.93), (3.68 + 0.55 * math.cos(a1), 0.2 + 0.55 * math.sin(a1), 1.93), 0.01, "chrome", verts=8)
+    cyl("rack_post_c", 3.7, 0.22, 0.011, 0, 2.08, "chrome", verts=8)
+    cyl("rack_post_c", 4.48, 0.22, 0.011, 0, 2.08, "chrome", verts=8); cyl("rack_post_c", 3.7, 1.0, 0.011, 0, 2.08, "chrome", verts=8)
     S[0] = "lights"
-    box("dressing_light", 4.85, 5.35, 1.45, 1.95, H - 0.05, H - 0.002, "panel", col="ceiling")
+    box("dressing_light", 4.8, 5.4, 1.4, 2.0, H - 0.05, H - 0.002, "panel", col="ceiling")
+    box("dressing_light_frame", 4.76, 5.44, 1.36, 2.04, H - 0.02, H - 0.001, "silver", col="ceiling")
     box("master_light", 1.5, 2.1, 2.3, 2.9, H - 0.05, H - 0.002, "panel", col="ceiling")
     box("living_light", 8.2, 9.0, 1.6, 2.4, H - 0.05, H - 0.002, "panel", col="ceiling")
     # ---- small room (guest)

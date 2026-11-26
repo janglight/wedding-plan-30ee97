@@ -16,10 +16,11 @@ SH = {  # loc, target, lens, ceiling on?
     "living": ((7.75, 5.75, 1.62), (8.9, 0.9, 0.62), 17, True),
     "kitchen": ((7.5, 1.7, 1.45), (8.9, 5.9, 0.95), 18, True),
     "master": ((3.3, 4.15, 1.5), (1.5, 0.5, 0.75), 17, True),
-    "dressing": ((4.25, 3.15, 1.5), (5.25, 0.2, 1.05), 15, True),
+    "dressing": ((4.25, 3.36, 1.55), (5.0, 0.0, 1.15), 12.5, True),
 }
 for n in shots:
     loc, tgt, lens, ceil = SH[n]
+    s.render.resolution_x, s.render.resolution_y = (res[1] * 3 // 4, res[1]) if n == "dressing" else res
     K.camera(loc, tgt, lens)
     for o in K.coll("ceiling").objects:
         o.hide_render = not ceil
