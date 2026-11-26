@@ -561,16 +561,16 @@ def furnish():
     S = STAGE
     # ---- living: sofa before the sheer south window, TV on an easel by the west wall, cabinets on the east wall
     S[0] = "furniture"
-    sofa(8.75, 0.95)
+    sofa(9.88, 1.4, yaw=0)   # across the room from the TV
     box("aircon", 6.95, 7.3, 0.22, 0.55, 0.0, 1.85, "silver", 0.03, 3)
     box("aircon_vent", 7.0, 7.25, 0.552, 0.556, 1.35, 1.75, "steel")
     # TV on a tripod easel
-    tvr = ((7.02, 2.45), -8)
-    box("tv", 6.98, 7.01, 1.8, 3.1, 0.82, 1.56, "screen", 0.004, rot=tvr)
-    box("tv_art", 7.01, 7.013, 1.83, 3.07, 0.85, 1.53, "art", rot=tvr)
-    rod("easel_leg_a", (7.2, 2.0, 0), (6.95, 2.4, 1.2), 0.016, "oak2", r2=0.012)
-    rod("easel_leg_b", (7.2, 2.9, 0), (6.95, 2.5, 1.2), 0.016, "oak2", r2=0.012)
-    rod("easel_leg_c", (6.75, 2.45, 0), (6.93, 2.45, 1.2), 0.016, "oak2", r2=0.012)
+    tvr = ((7.02, 1.4), 0)
+    box("tv", 6.98, 7.01, 0.75, 2.05, 0.82, 1.56, "screen", 0.004, rot=tvr)
+    box("tv_art", 7.01, 7.013, 0.78, 2.02, 0.85, 1.53, "art", rot=tvr)
+    rod("easel_leg_a", (7.2, 0.95, 0), (6.95, 1.35, 1.2), 0.016, "oak2", r2=0.012)
+    rod("easel_leg_b", (7.2, 1.85, 0), (6.95, 1.45, 1.2), 0.016, "oak2", r2=0.012)
+    rod("easel_leg_c", (6.75, 1.4, 0), (6.93, 1.4, 1.2), 0.016, "oak2", r2=0.012)
     # sideboard with the oven and rice cooker, then the hutch
     S[0] = "builtin"
     box("sideboard", 9.98, 10.38, 2.55, 3.6, 0.04, 0.92, "walnut", 0.006)
@@ -581,26 +581,29 @@ def furnish():
     box("rice_cooker", 10.02, 10.28, 2.66, 2.98, 0.5, 0.72, "white", 0.06, 4)
     for i in range(2):
         box("sideboard_drawer", 9.972, 9.98, 2.57 + 0.52 * i, 3.07 + 0.52 * i, 0.08, 0.47, "walnut", 0.003)
-    box("hutch_base", 9.98, 10.38, 1.55, 2.47, 0.12, 0.95, "walnut", 0.006)
+    # the hutch stands on the west wall beside the TV (mirrored from the east wall, shifted north)
+    hb = lambda n, x0, x1, y0, y1, *a, **k: box(n, 17.04 - x1, 17.04 - x0, y0 + 0.75, y1 + 0.75, *a, **k)
+    hc = lambda n, x, y, *a, **k: cyl(n, 17.04 - x, y + 0.75, *a, **k)
+    hb("hutch_base", 9.98, 10.38, 1.55, 2.47, 0.12, 0.95, "walnut", 0.006)
     for i in range(2):
-        box("hutch_glass", 9.972, 9.98, 1.6 + 0.43 * i, 1.99 + 0.43 * i, 0.18, 0.72, "ribbed")
-        box("hutch_drawer", 9.972, 9.98, 1.58 + 0.44 * i, 2.0 + 0.44 * i, 0.76, 0.92, "walnut", 0.003)
+        hb("hutch_glass", 9.972, 9.98, 1.6 + 0.43 * i, 1.99 + 0.43 * i, 0.18, 0.72, "ribbed")
+        hb("hutch_drawer", 9.972, 9.98, 1.58 + 0.44 * i, 2.0 + 0.44 * i, 0.76, 0.92, "walnut", 0.003)
     for i, y in enumerate((1.6, 2.42)):
-        cyl(f"hutch_foot{i}", 10.02, y, 0.015, 0, 0.12, "black", verts=8)
-    box("hutch_side_a", 10.1, 10.38, 1.55, 1.58, 0.95, 1.95, "walnut"); box("hutch_side_b", 10.1, 10.38, 2.44, 2.47, 0.95, 1.95, "walnut")
+        hc(f"hutch_foot{i}", 10.02, y, 0.015, 0, 0.12, "black", verts=8)
+    hb("hutch_side_a", 10.1, 10.38, 1.55, 1.58, 0.95, 1.95, "walnut"); hb("hutch_side_b", 10.1, 10.38, 2.44, 2.47, 0.95, 1.95, "walnut")
     for z in (1.42, 1.9):
-        box("hutch_shelf", 10.1, 10.38, 1.58, 2.44, z, z + 0.025, "walnut")
+        hb("hutch_shelf", 10.1, 10.38, 1.58, 2.44, z, z + 0.025, "walnut")
     S[0] = "decor"
-    cyl("jug", 10.2, 1.78, 0.06, 0.95, 1.16, "ceramic", r2=0.035); cyl("dish", 10.2, 2.2, 0.05, 0.95, 0.99, "ceramic", r2=0.12)
+    hc("jug", 10.2, 1.78, 0.06, 0.95, 1.16, "ceramic", r2=0.035); hc("dish", 10.2, 2.2, 0.05, 0.95, 0.99, "ceramic", r2=0.12)
     for i in range(3):
-        cyl("plate", 10.24, 1.85, 0.11, 1.445 + 0.012 * i, 1.455 + 0.012 * i, "ceramic")
-    cyl("cup_a", 10.22, 2.15, 0.04, 1.445, 1.53, "ceramic"); cyl("cup_b", 10.22, 2.3, 0.04, 1.445, 1.53, "ceramic")
-    cyl("top_vase", 10.24, 1.8, 0.05, 1.925, 2.06, "ceramic", r2=0.025)
-    cyl("top_pot", 10.24, 2.25, 0.06, 1.925, 2.03, "pot", r2=0.075)
+        hc("plate", 10.24, 1.85, 0.11, 1.445 + 0.012 * i, 1.455 + 0.012 * i, "ceramic")
+    hc("cup_a", 10.22, 2.15, 0.04, 1.445, 1.53, "ceramic"); hc("cup_b", 10.22, 2.3, 0.04, 1.445, 1.53, "ceramic")
+    hc("top_vase", 10.24, 1.8, 0.05, 1.925, 2.06, "ceramic", r2=0.025)
+    hc("top_pot", 10.24, 2.25, 0.06, 1.925, 2.03, "pot", r2=0.075)
     for i in range(14):
         o = ball("ivy", 0, 0, 0, 0.05, "leaf2", squash=(1, 0.7, 0.2))
         t = i / 13
-        o.location = (10.2 - 0.08 * math.sin(i * 2.3), 2.25 + 0.14 * math.cos(i * 1.9) + 0.12 * t, 2.1 - 0.75 * t ** 1.5 * (i % 2))
+        o.location = (6.84 + 0.08 * math.sin(i * 2.3), 3.0 + 0.14 * math.cos(i * 1.9) + 0.12 * t, 2.1 - 0.75 * t ** 1.5 * (i % 2))
         o.rotation_euler = (0.5, 0.4, i * 2.3); o["home"] = tuple(o.location)
     cyl("side_vase", 10.18, 2.75, 0.07, 0.92, 1.08, "pot", r2=0.045)
     for i in range(7):
