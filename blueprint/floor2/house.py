@@ -561,20 +561,20 @@ def furnish():
     S = STAGE
     # ---- living: sofa before the sheer south window, TV on an easel by the west wall, cabinets on the east wall
     S[0] = "furniture"
-    sofa(9.88, 1.25, yaw=0)   # across the room from the TV
+    sofa(9.88, 1.7, yaw=0)   # across the room from the TV
     box("aircon", 6.95, 7.3, 0.22, 0.55, 0.0, 1.85, "silver", 0.03, 3)
     box("aircon_vent", 7.0, 7.25, 0.552, 0.556, 1.35, 1.75, "steel")
     # TV on a tripod easel
-    tvr = ((7.02, 1.25), 0)
-    box("tv", 6.98, 7.01, 0.6, 1.9, 0.82, 1.56, "screen", 0.004, rot=tvr)
-    box("tv_art", 7.01, 7.013, 0.63, 1.87, 0.85, 1.53, "art", rot=tvr)
-    rod("easel_leg_a", (7.2, 0.8, 0), (6.95, 1.2, 1.2), 0.016, "oak2", r2=0.012)
-    rod("easel_leg_b", (7.2, 1.7, 0), (6.95, 1.3, 1.2), 0.016, "oak2", r2=0.012)
-    rod("easel_leg_c", (6.75, 1.25, 0), (6.93, 1.25, 1.2), 0.016, "oak2", r2=0.012)
+    tvr = ((7.02, 1.7), 0)
+    box("tv", 6.98, 7.01, 1.05, 2.35, 0.82, 1.56, "screen", 0.004, rot=tvr)
+    box("tv_art", 7.01, 7.013, 1.08, 2.32, 0.85, 1.53, "art", rot=tvr)
+    rod("easel_leg_a", (7.2, 1.25, 0), (6.95, 1.65, 1.2), 0.016, "oak2", r2=0.012)
+    rod("easel_leg_b", (7.2, 2.15, 0), (6.95, 1.75, 1.2), 0.016, "oak2", r2=0.012)
+    rod("easel_leg_c", (6.75, 1.7, 0), (6.93, 1.7, 1.2), 0.016, "oak2", r2=0.012)
     # sideboard with the oven and rice cooker, then the hutch
     S[0] = "builtin"
     # east wall, as in the reference: sofa, then the hutch, then the oven sideboard beside the dining table
-    DY = 0.73
+    DY = 1.18
     hb = lambda n, x0, x1, y0, y1, *a, **k: box(n, x0, x1, y0 + DY, y1 + DY, *a, **k)
     hc = lambda n, x, y, *a, **k: cyl(n, x, y + DY, *a, **k)
     hb("sideboard", 9.98, 10.38, 2.55, 3.6, 0.04, 0.92, "walnut", 0.006)
