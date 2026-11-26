@@ -234,6 +234,9 @@ def materials():
     mat("downlight", (1.0, 0.9, 0.8), 0.5, emit=40.0, ecol=(1.0, 0.82, 0.62))
     mat("screen", (0.01, 0.01, 0.012), 0.08)
     mat("books", (0.5, 0.3, 0.22), 0.7, kind="tile")
+    for i, c in enumerate(((0.92, 0.9, 0.85), (0.9, 0.62, 0.66), (0.93, 0.86, 0.5), (0.1, 0.1, 0.12), (0.45, 0.47, 0.5), (0.85, 0.45, 0.15),
+                           (0.3, 0.36, 0.28), (0.72, 0.6, 0.45), (0.2, 0.25, 0.4), (0.8, 0.78, 0.9))):
+        mat(f"cloth{i}", c, 0.95, kind="fabric")
     mat("paper", kind="image", rough=0.9, reveal=False)
     mat("desk", (0.16, 0.13, 0.11), 0.5, kind="wood", scale=0.3, reveal=False)
 
@@ -562,6 +565,28 @@ def rack(x0, x1, y0, y1, bays, tag, kind="hang"):
         rod(f"rack_brace_{tag}", (wall_x, a1, 1.05), (wall_x, a0, 1.75), 0.004, "chrome", verts=6)
 
 
+def clothes(x, y0, y1, z, long=0.7, short=0.5, pal=range(10)):
+    """garments on a rail that runs along y at height z: one thin soft slab each, on its hanger"""
+    y = y0 + 0.05
+    pal = list(pal)
+    while y < y1 - 0.04:
+        h = random.uniform(short, long)
+        w = random.uniform(0.38, 0.46)
+        box("garment", x - w / 2, x + w / 2, y - 0.017, y + 0.017, z - 0.04 - h, z - 0.04, f"cloth{random.choice(pal)}", 0.014, 3,
+            rot=((x, y), random.uniform(-7, 7)), stage="decor")
+        y += random.uniform(0.045, 0.075)
+
+
+def tv_stand(x, y, yaw):
+    """the white floor-stand TV from the dressing-room photo: round base, pole, screen"""
+    r = ((x, y), yaw)
+    cyl("tvstand_base", x, y, 0.3, 0.0, 0.025, "white", verts=40)
+    cyl("tvstand_pole", x, y, 0.035, 0.025, 1.25, "white", verts=16)
+    box("tvstand_mount", x - 0.1, x + 0.1, y - 0.06, y - 0.035, 1.0, 1.25, "silver", rot=r)
+    box("tvstand_back", x - 0.62, x + 0.62, y - 0.085, y - 0.06, 0.78, 1.5, "white", 0.006, rot=r)
+    box("tvstand_screen", x - 0.61, x + 0.61, y - 0.09, y - 0.085, 0.79, 1.49, "screen", rot=r)
+
+
 def corner_shelf(cx, cy, r, z, m="white", sx=1):
     """a quarter-round shelf in the south-east corner (the curved unit in the photo)"""
     bm = bmesh.new()
@@ -660,6 +685,7 @@ def furnish():
     # ---- master bedroom
     S[0] = "furniture"
     master_bed()
+    tv_stand(1.85, 4.05, 0)       # the stand TV from the dressing-room photo, facing the bed
     # ---- dressing room (the chrome system hangers in the photo)
     S[0] = "builtin"
     # seen from the door looking south, as in the photo: hanging bays on the left (east) wall with the wall
@@ -685,6 +711,17 @@ def furnish():
         rod("rack_corner_rail", (3.68 + 0.55 * math.cos(a0), 0.2 + 0.55 * math.sin(a0), 1.93), (3.68 + 0.55 * math.cos(a1), 0.2 + 0.55 * math.sin(a1), 1.93), 0.01, "chrome", verts=8)
     cyl("rack_post_c", 3.7, 0.22, 0.011, 0, 2.08, "chrome", verts=8)
     cyl("rack_post_c", 4.48, 0.22, 0.011, 0, 2.08, "chrome", verts=8); cyl("rack_post_c", 3.7, 1.0, 0.011, 0, 2.08, "chrome", verts=8)
+    S[0] = "decor"
+    clothes(6.25, 1.22, 3.13, 1.93, 0.72, 0.55)                       # left bays, upper rail: shirts and knits
+    clothes(6.25, 1.22, 3.13, 0.9, 0.55, 0.42, pal=(0, 3, 4, 7, 8))    # lower rail: trousers
+    clothes(4.89, 0.3, 0.3, 1.93)                                     # (nothing on the window unit)
+    for i in range(6):                                                # coats on the corner rail
+        a = math.radians(12 + 13 * i)
+        px, py = 3.68 + 0.55 * math.cos(a), 0.2 + 0.55 * math.sin(a)
+        box("coat", px - 0.22, px + 0.22, py - 0.02, py + 0.02, 0.85, 1.89, f"cloth{(0, 7, 3, 8, 7, 0)[i]}", 0.016, 3,
+            rot=((px, py), math.degrees(a)))
+    for k, (bx, by, m) in enumerate(((5.1, 1.5, "cloth4"), (5.35, 2.15, "cloth0"))):   # the fabric storage boxes
+        box("storage_box", bx - 0.3, bx + 0.3, by - 0.2, by + 0.2, 0, 0.33, m, 0.03, 3, rot=((bx, by), 20 + 35 * k))
     S[0] = "lights"
     box("dressing_light", 4.8, 5.4, 1.4, 2.0, H - 0.05, H - 0.002, "panel", col="ceiling")
     box("dressing_light_frame", 4.76, 5.44, 1.36, 2.04, H - 0.02, H - 0.001, "silver", col="ceiling")
