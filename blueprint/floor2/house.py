@@ -561,29 +561,30 @@ def furnish():
     S = STAGE
     # ---- living: sofa before the sheer south window, TV on an easel by the west wall, cabinets on the east wall
     S[0] = "furniture"
-    sofa(9.88, 1.4, yaw=0)   # across the room from the TV
+    sofa(9.88, 1.25, yaw=0)   # across the room from the TV
     box("aircon", 6.95, 7.3, 0.22, 0.55, 0.0, 1.85, "silver", 0.03, 3)
     box("aircon_vent", 7.0, 7.25, 0.552, 0.556, 1.35, 1.75, "steel")
     # TV on a tripod easel
-    tvr = ((7.02, 1.4), 0)
-    box("tv", 6.98, 7.01, 0.75, 2.05, 0.82, 1.56, "screen", 0.004, rot=tvr)
-    box("tv_art", 7.01, 7.013, 0.78, 2.02, 0.85, 1.53, "art", rot=tvr)
-    rod("easel_leg_a", (7.2, 0.95, 0), (6.95, 1.35, 1.2), 0.016, "oak2", r2=0.012)
-    rod("easel_leg_b", (7.2, 1.85, 0), (6.95, 1.45, 1.2), 0.016, "oak2", r2=0.012)
-    rod("easel_leg_c", (6.75, 1.4, 0), (6.93, 1.4, 1.2), 0.016, "oak2", r2=0.012)
+    tvr = ((7.02, 1.25), 0)
+    box("tv", 6.98, 7.01, 0.6, 1.9, 0.82, 1.56, "screen", 0.004, rot=tvr)
+    box("tv_art", 7.01, 7.013, 0.63, 1.87, 0.85, 1.53, "art", rot=tvr)
+    rod("easel_leg_a", (7.2, 0.8, 0), (6.95, 1.2, 1.2), 0.016, "oak2", r2=0.012)
+    rod("easel_leg_b", (7.2, 1.7, 0), (6.95, 1.3, 1.2), 0.016, "oak2", r2=0.012)
+    rod("easel_leg_c", (6.75, 1.25, 0), (6.93, 1.25, 1.2), 0.016, "oak2", r2=0.012)
     # sideboard with the oven and rice cooker, then the hutch
     S[0] = "builtin"
-    box("sideboard", 9.98, 10.38, 2.55, 3.6, 0.04, 0.92, "walnut", 0.006)
-    box("sideboard_niche", 9.975, 10.3, 2.6, 3.55, 0.5, 0.86, "walnut_dark")
-    box("sideboard_div", 9.975, 10.3, 3.06, 3.09, 0.5, 0.86, "walnut")
-    box("oven", 10.0, 10.3, 3.12, 3.52, 0.5, 0.74, "cream", 0.02, 3)
-    box("oven_window", 9.996, 10.0, 3.16, 3.4, 0.54, 0.7, "screen")
-    box("rice_cooker", 10.02, 10.28, 2.66, 2.98, 0.5, 0.72, "white", 0.06, 4)
+    # east wall, as in the reference: sofa, then the hutch, then the oven sideboard beside the dining table
+    DY = 0.73
+    hb = lambda n, x0, x1, y0, y1, *a, **k: box(n, x0, x1, y0 + DY, y1 + DY, *a, **k)
+    hc = lambda n, x, y, *a, **k: cyl(n, x, y + DY, *a, **k)
+    hb("sideboard", 9.98, 10.38, 2.55, 3.6, 0.04, 0.92, "walnut", 0.006)
+    hb("sideboard_niche", 9.975, 10.3, 2.6, 3.55, 0.5, 0.86, "walnut_dark")
+    hb("sideboard_div", 9.975, 10.3, 3.06, 3.09, 0.5, 0.86, "walnut")
+    hb("oven", 10.0, 10.3, 3.12, 3.52, 0.5, 0.74, "cream", 0.02, 3)
+    hb("oven_window", 9.996, 10.0, 3.16, 3.4, 0.54, 0.7, "screen")
+    hb("rice_cooker", 10.02, 10.28, 2.66, 2.98, 0.5, 0.72, "white", 0.06, 4)
     for i in range(2):
-        box("sideboard_drawer", 9.972, 9.98, 2.57 + 0.52 * i, 3.07 + 0.52 * i, 0.08, 0.47, "walnut", 0.003)
-    # the hutch stands on the west wall beside the TV (mirrored from the east wall, shifted north)
-    hb = lambda n, x0, x1, y0, y1, *a, **k: box(n, 17.04 - x1, 17.04 - x0, y0 + 0.75, y1 + 0.75, *a, **k)
-    hc = lambda n, x, y, *a, **k: cyl(n, 17.04 - x, y + 0.75, *a, **k)
+        hb("sideboard_drawer", 9.972, 9.98, 2.57 + 0.52 * i, 3.07 + 0.52 * i, 0.08, 0.47, "walnut", 0.003)
     hb("hutch_base", 9.98, 10.38, 1.55, 2.47, 0.12, 0.95, "walnut", 0.006)
     for i in range(2):
         hb("hutch_glass", 9.972, 9.98, 1.6 + 0.43 * i, 1.99 + 0.43 * i, 0.18, 0.72, "ribbed")
@@ -603,15 +604,15 @@ def furnish():
     for i in range(14):
         o = ball("ivy", 0, 0, 0, 0.05, "leaf2", squash=(1, 0.7, 0.2))
         t = i / 13
-        o.location = (6.84 + 0.08 * math.sin(i * 2.3), 3.0 + 0.14 * math.cos(i * 1.9) + 0.12 * t, 2.1 - 0.75 * t ** 1.5 * (i % 2))
+        o.location = (10.2 - 0.08 * math.sin(i * 2.3), 2.25 + DY + 0.14 * math.cos(i * 1.9) + 0.12 * t, 2.1 - 0.75 * t ** 1.5 * (i % 2))
         o.rotation_euler = (0.5, 0.4, i * 2.3); o["home"] = tuple(o.location)
-    cyl("side_vase", 10.18, 2.75, 0.07, 0.92, 1.08, "pot", r2=0.045)
+    hc("side_vase", 10.18, 2.75, 0.07, 0.92, 1.08, "pot", r2=0.045)
     for i in range(7):
         o = ball("twig", 0, 0, 0, 0.04, "leaf2", squash=(1, 0.6, 0.2))
-        o.location = (10.18 + 0.1 * math.cos(i * 2.2), 2.75 + 0.12 * math.sin(i * 2.2), 1.15 + 0.035 * i)
+        o.location = (10.18 + 0.1 * math.cos(i * 2.2), 2.75 + DY + 0.12 * math.sin(i * 2.2), 1.15 + 0.035 * i)
         o.rotation_euler = (0.4, 0.5, i * 2.2); o["home"] = tuple(o.location)
-    ball("glow_lamp", 10.18, 3.0, 1.0, 0.075, "lamp", stage="lights")
-    cyl("glow_lamp_base", 10.18, 3.0, 0.045, 0.92, 0.935, "oak2")
+    ball("glow_lamp", 10.18, 3.0 + DY, 1.0, 0.075, "lamp", stage="lights")
+    hc("glow_lamp_base", 10.18, 3.0, 0.045, 0.92, 0.935, "oak2")
     curtain("x", 0.2, 7.35, 9.95, name="curtain_south")
     # ---- dining (the walnut set in the photo) on a jute rug
     S[0] = "furniture"
